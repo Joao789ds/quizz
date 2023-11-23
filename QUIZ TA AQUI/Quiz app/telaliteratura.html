@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+
+
+  <title>Quiz esporte</title>
+</head>
+<body>
+  <div class="container">
+    <div class="questions-container hide">
+      <span class="question">Pergunta aqui?</span>
+      <div class="answers-container">
+        <button class="answer button">Resposta 1</button>
+        <button class="answer button">Resposta 2</button>
+        <button class="answer button">Resposta 3</button>
+        <button class="answer button">Resposta 4</button>
+      </div>
+    </div>
+    <div class="controls-container">
+      <button class="start-quiz button">Começar Quiz!</button>
+      <button class="next-question button hide">Próxima pergunta</button>
+    </div>
+  </div>
+
+<script>
+
+  const $startGameButton = document.querySelector(".start-quiz")
+const $nextQuestionButton = document.querySelector(".next-question")
+const $questionsContainer = document.querySelector(".questions-container")
+const $questionText = document.querySelector(".question")
+const $answersContainer = document.querySelector(".answers-container")
+const $answers = document.querySelectorAll(".answer")
+
+let currentQuestionIndex = 0
+let totalCorrect = 0
+
+$startGameButton.addEventListener("click", startGame)
+$nextQuestionButton.addEventListener("click", displayNextQuestion)
+
+function startGame() {
+  $startGameButton.classList.add("hide")
+  $questionsContainer.classList.remove("hide")
+  displayNextQuestion()
+}
+
+function displayNextQuestion() {
+  resetState()
+  
+  if (questions.length === currentQuestionIndex) {
+    return finishGame()
+  }
+
+  $questionText.textContent = questions[currentQuestionIndex].question
+  questions[currentQuestionIndex].answers.forEach(answer => {
+    const newAsnwer = document.createElement("button")
+    newAsnwer.classList.add("button", "answer")
+    newAsnwer.textContent = answer.text
+    if (answer.correct) {
+      newAsnwer.dataset.correct = answer.correct
+    }
+    $answersContainer.appendChild(newAsnwer)
+
+    newAsnwer.addEventListener("click", selectAnswer)
+  })
+}
+
+function resetState() {
+  while($answersContainer.firstChild) {
+    $answersContainer.removeChild($answersContainer.firstChild)
+  }
+
+  document.body.removeAttribute("class")
+  $nextQuestionButton.classList.add("hide")
+}
+
+function selectAnswer(event) {
+  const answerClicked = event.target
+
+  if (answerClicked.dataset.correct) {
+    document.body.classList.add("correct")
+    totalCorrect++
+  } else {
+    document.body.classList.add("incorrect") 
+  }
+
+  document.querySelectorAll(".answer").forEach(button => {
+    button.disabled = true
+
+    if (button.dataset.correct) {
+      button.classList.add("correct")
+    } else {
+      button.classList.add("incorrect")
+    }
+  })
+  
+  $nextQuestionButton.classList.remove("hide")
+  currentQuestionIndex++
+}
+
+function finishGame() {
+  const totalQuestions = questions.length
+  const performance = Math.floor(totalCorrect * 100 / totalQuestions)
+  
+  let message = ""
+
+  switch (true) {
+    case (performance >= 90):
+      message = "Excelente :)"
+      break
+    case (performance >= 70):
+      message = "Muito bom :)"
+      break
+    case (performance >= 50):
+      message = "Bom"
+      break
+    default:
+      message = "Pode melhorar :("
+  }
+
+  $questionsContainer.innerHTML = 
+  `
+    <p class="final-message">
+      Você acertou ${totalCorrect} de ${totalQuestions} questões!
+      <span>Resultado: ${message}</span>
+    </p>
+    <button 
+      onclick=window.location.reload() 
+      class="button"
+    >
+      Refazer teste
+    </button>
+  `
+}
+
+
+const questions = [
+  {
+    question: "1: Great American writer",
+        answers: [
+          { text: "Adelia Prado", correct: false },
+          { text: "Gracilliano Ramos", correct: false },
+          { text: "Noah Schnapp", correct: false },
+          { text: "Sinclair Lewis", correct: true }
+    ]
+  },
+  {
+    question: "Who is the author of “The Catcher in the Rye”, one of the most influential novels in 20th century American literature?",
+        answers: [
+          { text: "Holden Caulfield", correct: true },
+          { text: "Ernest Hemingway", correct: false },
+          { text: "John Steinbeck", correct: false },
+          { text: "Mark Twain", correct: false }
+    ]
+  },
+  {
+    question: 'Who is the author of "O Sol é para Todos", a book that addresses racial issues in the United States?',
+        answers: [
+          { text: 'Harper Lee', correct: true },
+          { text: 'J.D. Salinger', correct: false },
+          { text: 'Maya Angelou', correct: false },
+          { text: "Toni Morrison", correct: false }
+    ]
+  },
+  {
+    question: 'What is the title of Edgar Allan Poe s famous poem that describes a visit from a mysterious raven?',
+        answers: [
+          { text: "The Raven", correct: true },
+          { text: "The Crow", correct: false }
+    ]
+  },
+  {
+    question: 'Who is the author of the book “Catcher in the Rye”, which has become a classic of youth literature?',
+        answers: [
+          { text: 'J.K. Rowling', correct: false },
+          { text: 'J.D. Salinger', correct: true },
+          { text: 'John Green', correct: false },
+          { text: 'Stephen Chbosky', correct: false }
+    ]
+  },
+  {
+    question: 'In what decade was George Orwell s book "1984" published, which criticizes totalitarian regimes?',
+        answers: [
+          { text: '1950', correct: false },
+          { text: '1940', correct: true },
+    ]
+  },
+  {
+    question: 'Qual é o título do romance de Ray Bradbury que descreve uma sociedade onde os livros são proibidos?',
+        answers: [
+          { text: 'The Handmaid s Tale', correct: false },
+          { text: 'Admirable new world', correct: false },
+          { text: '1984', correct: false },
+          { text: 'Fahrenheit 451', correct: true },
+    ]
+  },
+  ]
+
+
+</script>
+</body>
+</html>

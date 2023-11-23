@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" async></script>
+
+  <title>Quiz jogos digitais</title>
+</head>
+<body>
+  <div class="container">
+    <div class="questions-container hide">
+      <span class="question">Pergunta aqui?</span>
+      <div class="answers-container">
+        <button class="answer button">Resposta 1</button>
+        <button class="answer button">Resposta 2</button>
+        <button class="answer button">Resposta 3</button>
+        <button class="answer button">Resposta 4</button>
+      </div>
+    </div>
+    <div class="controls-container">
+      <button class="start-quiz button">Começar Quiz!</button>
+      <button class="next-question button hide">Próxima pergunta</button>
+    </div>
+  </div>
+
+  <script>
+
+    const $startGameButton = document.querySelector(".start-quiz")
+    const $nextQuestionButton = document.querySelector(".next-question")
+    const $questionsContainer = document.querySelector(".questions-container")
+    const $questionText = document.querySelector(".question")
+    const $answersContainer = document.querySelector(".answers-container")
+    const $answers = document.querySelectorAll(".answer")
+    
+    let currentQuestionIndex = 0
+    let totalCorrect = 0
+    
+    $startGameButton.addEventListener("click", startGame)
+    $nextQuestionButton.addEventListener("click", displayNextQuestion)
+    
+    function startGame() {
+      $startGameButton.classList.add("hide")
+      $questionsContainer.classList.remove("hide")
+      displayNextQuestion()
+    }
+    
+    function displayNextQuestion() {
+      resetState()
+      
+      if (questions.length === currentQuestionIndex) {
+        return finishGame()
+      }
+    
+      $questionText.textContent = questions[currentQuestionIndex].question
+      questions[currentQuestionIndex].answers.forEach(answer => {
+        const newAsnwer = document.createElement("button")
+        newAsnwer.classList.add("button", "answer")
+        newAsnwer.textContent = answer.text
+        if (answer.correct) {
+          newAsnwer.dataset.correct = answer.correct
+        }
+        $answersContainer.appendChild(newAsnwer)
+    
+        newAsnwer.addEventListener("click", selectAnswer)
+      })
+    }
+    
+    function resetState() {
+      while($answersContainer.firstChild) {
+        $answersContainer.removeChild($answersContainer.firstChild)
+      }
+    
+      document.body.removeAttribute("class")
+      $nextQuestionButton.classList.add("hide")
+    }
+    
+    function selectAnswer(event) {
+      const answerClicked = event.target
+    
+      if (answerClicked.dataset.correct) {
+        document.body.classList.add("correct")
+        totalCorrect++
+      } else {
+        document.body.classList.add("incorrect") 
+      }
+    
+      document.querySelectorAll(".answer").forEach(button => {
+        button.disabled = true
+    
+        if (button.dataset.correct) {
+          button.classList.add("correct")
+        } else {
+          button.classList.add("incorrect")
+        }
+      })
+      
+      $nextQuestionButton.classList.remove("hide")
+      currentQuestionIndex++
+    }
+    
+    function finishGame() {
+      const totalQuestions = questions.length
+      const performance = Math.floor(totalCorrect * 100 / totalQuestions)
+      
+      let message = ""
+    
+      switch (true) {
+        case (performance >= 90):
+          message = "Excelente :)"
+          break
+        case (performance >= 70):
+          message = "Muito bom :)"
+          break
+        case (performance >= 50):
+          message = "Bom"
+          break
+        default:
+          message = "Pode melhorar :("
+      }
+    
+      $questionsContainer.innerHTML = 
+      `
+        <p class="final-message">
+          Você acertou ${totalCorrect} de ${totalQuestions} questões!
+          <span>Resultado: ${message}</span>
+        </p>
+        <button 
+          onclick=window.location.reload() 
+          class="button"
+        >
+          Refazer teste
+        </button>
+      `
+    }
+    
+    
+    const questions = [
+      {
+        question: "What is the name of the playable protagonist in 'Red Dead Redemption 2' ?",
+        answers: [
+          { text: "Jonn", correct: false },
+          { text: "Pedro", correct: false },
+          { text: "Arthur", correct: true },
+          { text: "Paulo", correct: false }
+        ]
+      },
+      {
+        question: "What is the name of the fictional city where much of the action in 'Red Dead Redemption 2' ",
+        answers: [
+        { text: 'Saint Denis', correct: true },
+          { text: 'Blackwater', correct: false },
+          { text: 'Valentine', correct: false },
+          { text: "Nenhuma das alternativas", correct: false }
+        ]
+      },
+      {
+        question: 'What is the name of the map that features a peaceful setting often associated with Jett?',
+        answers: [
+          { text: 'Bind', correct: true },
+          { text: 'Ascent', correct: false },
+          { text: 'Haven', correct: false },
+          { text: "Nenhuma das alternativas", correct: false }
+        ]
+      },
+      {
+        question: 'In Valorant, how many players on each team are in a standard match?',
+        answers: [
+        { text: '10 PLAYERS', correct: true },
+          { text: '8 PLAYERS', correct: false },
+          { text: '6 PLAYERS', correct: false },
+          { text: "Nenhuma das alternativas", correct: false }
+        ]
+      },
+      {
+        question: 'Who is the games initial playable protagonist?',
+        answers: [
+          { text: 'Michael Townley', correct: true },
+          { text: 'Franklin Clinton', correct: false },
+          { text: 'Trevor Philips', correct: false },
+          { text: "Nenhuma das alternativas", correct: false }
+        ]
+      },
+      {
+        question: 'What is the name of the fictional city where most of the action in GTA V takes place?',
+        answers: [
+          { text: 'Los Santos', correct: true },
+          { text: 'Chicago', correct: true },
+          { text: 'Boston', correct: false },
+          { text: "Nenhuma das alternativas", correct: false }
+        ]
+      },
+      {
+        question: 'What does the acronym "GTA" in the game title mean?',
+        answers: [
+          { text: 'Grand Theft Auto', correct: true },
+          { text: 'Grand The Auto', correct: false },
+          { text: 'Gra The Auto', correct: false },
+          { text: "Nenhuma das alternativas", correct: false }
+        ]
+      },
+      ]
+    
+    
+    </script>
+</body>
+</html>

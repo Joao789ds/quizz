@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+
+
+  <title>Quiz esporte</title>
+</head>
+<body>
+  <div class="container">
+    <div class="questions-container hide">
+      <span class="question">Pergunta aqui?</span>
+      <div class="answers-container">
+        <button class="answer button">Resposta 1</button>
+        <button class="answer button">Resposta 2</button>
+        <button class="answer button">Resposta 3</button>
+        <button class="answer button">Resposta 4</button>
+      </div>
+    </div>
+    <div class="controls-container">
+      <button class="start-quiz button">Começar Quiz!</button>
+      <button class="next-question button hide">Próxima pergunta</button>
+    </div>
+  </div>
+
+<script>
+
+  const $startGameButton = document.querySelector(".start-quiz")
+const $nextQuestionButton = document.querySelector(".next-question")
+const $questionsContainer = document.querySelector(".questions-container")
+const $questionText = document.querySelector(".question")
+const $answersContainer = document.querySelector(".answers-container")
+const $answers = document.querySelectorAll(".answer")
+
+let currentQuestionIndex = 0
+let totalCorrect = 0
+
+$startGameButton.addEventListener("click", startGame)
+$nextQuestionButton.addEventListener("click", displayNextQuestion)
+
+function startGame() {
+  $startGameButton.classList.add("hide")
+  $questionsContainer.classList.remove("hide")
+  displayNextQuestion()
+}
+
+function displayNextQuestion() {
+  resetState()
+  
+  if (questions.length === currentQuestionIndex) {
+    return finishGame()
+  }
+
+  $questionText.textContent = questions[currentQuestionIndex].question
+  questions[currentQuestionIndex].answers.forEach(answer => {
+    const newAsnwer = document.createElement("button")
+    newAsnwer.classList.add("button", "answer")
+    newAsnwer.textContent = answer.text
+    if (answer.correct) {
+      newAsnwer.dataset.correct = answer.correct
+    }
+    $answersContainer.appendChild(newAsnwer)
+
+    newAsnwer.addEventListener("click", selectAnswer)
+  })
+}
+
+function resetState() {
+  while($answersContainer.firstChild) {
+    $answersContainer.removeChild($answersContainer.firstChild)
+  }
+
+  document.body.removeAttribute("class")
+  $nextQuestionButton.classList.add("hide")
+}
+
+function selectAnswer(event) {
+  const answerClicked = event.target
+
+  if (answerClicked.dataset.correct) {
+    document.body.classList.add("correct")
+    totalCorrect++
+  } else {
+    document.body.classList.add("incorrect") 
+  }
+
+  document.querySelectorAll(".answer").forEach(button => {
+    button.disabled = true
+
+    if (button.dataset.correct) {
+      button.classList.add("correct")
+    } else {
+      button.classList.add("incorrect")
+    }
+  })
+  
+  $nextQuestionButton.classList.remove("hide")
+  currentQuestionIndex++
+}
+
+function finishGame() {
+  const totalQuestions = questions.length
+  const performance = Math.floor(totalCorrect * 100 / totalQuestions)
+  
+  let message = ""
+
+  switch (true) {
+    case (performance >= 90):
+      message = "Excelente :)"
+      break
+    case (performance >= 70):
+      message = "Muito bom :)"
+      break
+    case (performance >= 50):
+      message = "Bom"
+      break
+    default:
+      message = "Pode melhorar :("
+  }
+
+  $questionsContainer.innerHTML = 
+  `
+    <p class="final-message">
+      Você acertou ${totalCorrect} de ${totalQuestions} questões!
+      <span>Resultado: ${message}</span>
+    </p>
+    <button 
+      onclick=window.location.reload() 
+      class="button"
+    >
+      Refazer teste
+    </button>
+  `
+}
+
+
+const questions = [
+  {
+    question: "1: In which year did Brazil host the Olympic Games for the first time?",
+        answers: [
+          { text: "1952", correct: false },
+          { text: "1968", correct: false },
+          { text: "2016", correct: true },
+          { text: "2007>", correct: false }
+    ]
+  },
+  {
+    question: "What sport is associated with the term hat trick?",
+        answers: [
+          { text: "Football", correct: true },
+          { text: "Cricket", correct: false },
+          { text: "Ice hockey", correct: false },
+          { text: "Tennis", correct: false }
+    ]
+  },
+  {
+    question: 'Who is the player with the most Golden Balls in the world?',
+        answers: [
+          { text: 'Lionel Messi', correct: true },
+          { text: 'Cristiano Ronaldo', correct: false },
+          { text: 'Neymar', correct: false },
+          { text: "Nenhuma das alternativas", correct: false }
+    ]
+  },
+  {
+    question: 'How many players does a volleyball team typically have on the court during a match?',
+        answers: [
+          { text: "5", correct: false },
+          { text: "6", correct: true }
+    ]
+  },
+  {
+    question: 'Who holds the record for the most Olympic medals in the history of the Olympic Games?',
+        answers: [
+          { text: 'Usain Bolt (athletics));', correct: false },
+          { text: 'Michael Phelps (swimming));', correct: true },
+          { text: 'Michael Phelps (swimming));', correct: false },
+          { text: 'Simone Biles (artistic gymnastics));', correct: false }
+    ]
+  },
+  {
+    question: 'In which country did the sport of judo originate?',
+        answers: [
+          { text: 'Russia', correct: false },
+          { text: 'Japan', correct: true },
+    ]
+  },
+  {
+    question: 'Which country has the most World Cups?',
+        answers: [
+          { text: 'Argentina', correct: false },
+          { text: 'France', correct: false },
+          { text: 'Italy', correct: false },
+          { text: 'Brazil', correct: true },
+    ]
+  },
+  ]
+
+
+</script>
+</body>
+</html>

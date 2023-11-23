@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+
+
+  <title>Quiz esporte</title>
+</head>
+<body>
+  <div class="container">
+    <div class="questions-container hide">
+      <span class="question">Pergunta aqui?</span>
+      <div class="answers-container">
+        <button class="answer button">Resposta 1</button>
+        <button class="answer button">Resposta 2</button>
+        <button class="answer button">Resposta 3</button>
+        <button class="answer button">Resposta 4</button>
+      </div>
+    </div>
+    <div class="controls-container">
+      <button class="start-quiz button">Começar Quiz!</button>
+      <button class="next-question button hide">Próxima pergunta</button>
+    </div>
+  </div>
+
+<script>
+
+  const $startGameButton = document.querySelector(".start-quiz")
+const $nextQuestionButton = document.querySelector(".next-question")
+const $questionsContainer = document.querySelector(".questions-container")
+const $questionText = document.querySelector(".question")
+const $answersContainer = document.querySelector(".answers-container")
+const $answers = document.querySelectorAll(".answer")
+
+let currentQuestionIndex = 0
+let totalCorrect = 0
+
+$startGameButton.addEventListener("click", startGame)
+$nextQuestionButton.addEventListener("click", displayNextQuestion)
+
+function startGame() {
+  $startGameButton.classList.add("hide")
+  $questionsContainer.classList.remove("hide")
+  displayNextQuestion()
+}
+
+function displayNextQuestion() {
+  resetState()
+  
+  if (questions.length === currentQuestionIndex) {
+    return finishGame()
+  }
+
+  $questionText.textContent = questions[currentQuestionIndex].question
+  questions[currentQuestionIndex].answers.forEach(answer => {
+    const newAsnwer = document.createElement("button")
+    newAsnwer.classList.add("button", "answer")
+    newAsnwer.textContent = answer.text
+    if (answer.correct) {
+      newAsnwer.dataset.correct = answer.correct
+    }
+    $answersContainer.appendChild(newAsnwer)
+
+    newAsnwer.addEventListener("click", selectAnswer)
+  })
+}
+
+function resetState() {
+  while($answersContainer.firstChild) {
+    $answersContainer.removeChild($answersContainer.firstChild)
+  }
+
+  document.body.removeAttribute("class")
+  $nextQuestionButton.classList.add("hide")
+}
+
+function selectAnswer(event) {
+  const answerClicked = event.target
+
+  if (answerClicked.dataset.correct) {
+    document.body.classList.add("correct")
+    totalCorrect++
+  } else {
+    document.body.classList.add("incorrect") 
+  }
+
+  document.querySelectorAll(".answer").forEach(button => {
+    button.disabled = true
+
+    if (button.dataset.correct) {
+      button.classList.add("correct")
+    } else {
+      button.classList.add("incorrect")
+    }
+  })
+  
+  $nextQuestionButton.classList.remove("hide")
+  currentQuestionIndex++
+}
+
+function finishGame() {
+  const totalQuestions = questions.length
+  const performance = Math.floor(totalCorrect * 100 / totalQuestions)
+  
+  let message = ""
+
+  switch (true) {
+    case (performance >= 90):
+      message = "Excelente :)"
+      break
+    case (performance >= 70):
+      message = "Muito bom :)"
+      break
+    case (performance >= 50):
+      message = "Bom"
+      break
+    default:
+      message = "Pode melhorar :("
+  }
+
+  $questionsContainer.innerHTML = 
+  `
+    <p class="final-message">
+      Você acertou ${totalCorrect} de ${totalQuestions} questões!
+      <span>Resultado: ${message}</span>
+    </p>
+    <button 
+      onclick=window.location.reload() 
+      class="button"
+    >
+      Refazer teste
+    </button>
+  `
+}
+
+
+const questions = [
+  {
+    question: "1: What is the highest point in North America and where is it located?",
+        answers: [
+          { text: "Mount McKinley, United States", correct: false },
+          { text: "Mount Rainier, United States", correct: false },
+          { text: "Mount Logan, Canada", correct: true },
+          { text: "Mount Saint Elias, Canada", correct: false }
+    ]
+  },
+  {
+    question: "What are the two main rivers in the United States that form an important river system in the central region of the country?",
+        answers: [
+          { text: "Missouri River and Ohio River", correct: true },
+          { text: "Mississippi River and Columbia River", correct: false },
+          { text: "Colorado River and Rio Grande", correct: false },
+          { text: "Hudson River and Delaware River", correct: false }
+    ]
+  },
+  {
+    question: 'What is the largest desert in North America and in which country is it located?',
+        answers: [
+          { text: 'Sonoran Desert, Mexico', correct: true },
+          { text: 'Mojave Desert, United States', correct: false },
+          { text: 'Great Valley Desert, Canada', correct: false },
+          { text: "Atacama Desert, Chile", correct: false }
+    ]
+  },
+  {
+    question: 'What is the capital of Canada?',
+        answers: [
+          { text: "Ottawa", correct: true },
+          { text: "Vancouver", correct: false }
+    ]
+  },
+  {
+    question: 'Which two states in the United States are not part of the so-called "contiguous territory" (the 48 connected states)?',
+        answers: [
+          { text: 'California and New York', correct: false },
+          { text: 'Alaska and Hawaii', correct: true },
+          { text: 'Texas and Florida', correct: false },
+          { text: 'Washington and Oregon', correct: false }
+    ]
+  },
+  {
+    question: 'In which country did the sport of judo originate?',
+        answers: [
+          { text: 'Los Angeles', correct: false },
+          { text: 'Sacrament', correct: true },
+    ]
+  },
+  {
+    question: 'What is the largest freshwater lake in the United States by volume?',
+        answers: [
+          { text: 'Lake Erie', correct: false },
+          { text: 'Lake Tahoe', correct: false },
+          { text: 'Lake Michigan', correct: false },
+          { text: 'Lake Superior', correct: true },
+    ]
+  },
+  ]
+
+
+</script>
+</body>
+</html>

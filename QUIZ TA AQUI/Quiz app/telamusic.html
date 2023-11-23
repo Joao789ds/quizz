@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" async></script>
+
+  <title>Quiz JavaScript</title>
+</head>
+<body>
+  <div class="container">
+    <div class="questions-container hide">
+      <span class="question">Pergunta aqui?</span>
+      <div class="answers-container">
+        <button class="answer button">Resposta 1</button>
+        <button class="answer button">Resposta 2</button>
+        <button class="answer button">Resposta 3</button>
+        <button class="answer button">Resposta 4</button>
+      </div>
+    </div>
+    <div class="controls-container">
+      <button class="start-quiz button">Começar Quiz!</button>
+      <button class="next-question button hide">Próxima pergunta</button>
+    </div>
+  </div>
+
+  <script>
+
+      const $startGameButton = document.querySelector(".start-quiz")
+    const $nextQuestionButton = document.querySelector(".next-question")
+    const $questionsContainer = document.querySelector(".questions-container")
+    const $questionText = document.querySelector(".question")
+    const $answersContainer = document.querySelector(".answers-container")
+    const $answers = document.querySelectorAll(".answer")
+    
+    let currentQuestionIndex = 0
+    let totalCorrect = 0
+    
+    $startGameButton.addEventListener("click", startGame)
+    $nextQuestionButton.addEventListener("click", displayNextQuestion)
+    
+    function startGame() {
+      $startGameButton.classList.add("hide")
+      $questionsContainer.classList.remove("hide")
+      displayNextQuestion()
+    }
+    
+    function displayNextQuestion() {
+      resetState()
+      
+      if (questions.length === currentQuestionIndex) {
+        return finishGame()
+      }
+    
+      $questionText.textContent = questions[currentQuestionIndex].question
+      questions[currentQuestionIndex].answers.forEach(answer => {
+        const newAsnwer = document.createElement("button")
+        newAsnwer.classList.add("button", "answer")
+        newAsnwer.textContent = answer.text
+        if (answer.correct) {
+          newAsnwer.dataset.correct = answer.correct
+        }
+        $answersContainer.appendChild(newAsnwer)
+    
+        newAsnwer.addEventListener("click", selectAnswer)
+      })
+    }
+    
+    function resetState() {
+      while($answersContainer.firstChild) {
+        $answersContainer.removeChild($answersContainer.firstChild)
+      }
+    
+      document.body.removeAttribute("class")
+      $nextQuestionButton.classList.add("hide")
+    }
+    
+    function selectAnswer(event) {
+      const answerClicked = event.target
+    
+      if (answerClicked.dataset.correct) {
+        document.body.classList.add("correct")
+        totalCorrect++
+      } else {
+        document.body.classList.add("incorrect") 
+      }
+    
+      document.querySelectorAll(".answer").forEach(button => {
+        button.disabled = true
+    
+        if (button.dataset.correct) {
+          button.classList.add("correct")
+        } else {
+          button.classList.add("incorrect")
+        }
+      })
+      
+      $nextQuestionButton.classList.remove("hide")
+      currentQuestionIndex++
+    }
+    
+    function finishGame() {
+      const totalQuestions = questions.length
+      const performance = Math.floor(totalCorrect * 100 / totalQuestions)
+      
+      let message = ""
+    
+      switch (true) {
+        case (performance >= 90):
+          message = "Excelente :)"
+          break
+        case (performance >= 70):
+          message = "Muito bom :)"
+          break
+        case (performance >= 50):
+          message = "Bom"
+          break
+        default:
+          message = "Pode melhorar :("
+      }
+    
+      $questionsContainer.innerHTML = 
+      `
+        <p class="final-message">
+          Você acertou ${totalCorrect} de ${totalQuestions} questões!
+          <span>Resultado: ${message}</span>
+        </p>
+        <button 
+          onclick=window.location.reload() 
+          class="button"
+        >
+          Refazer teste
+        </button>
+      `
+    }
+    
+    
+    const questions = [
+      {
+        question: "1: Who is known as the 'King of Rock and Roll'?",
+        answers: [
+          { text: "Johnny Cash", correct: false },
+          { text: "Chuck Berry", correct: false },
+          { text: "Elvis Presley", correct: true },
+          { text: "Buddy Holly", correct: false }
+        ]
+      },
+      {
+        question: "Which iconic Beatles album was released in 1967 and is often considered a landmark in the history of music?",
+        answers: [
+          { text: "Sgt. Pepper's Lonely Hearts Club Band", correct: true },
+          { text: "Abbey Road", correct: false },
+          { text: "The White Album", correct: false },
+          { text: "Rubber Soul", correct: false }
+        ]
+      },
+      {
+        question: 'Who is the "Queen of Pop"?',
+        answers: [
+          { text: 'Madonna', correct: true },
+          { text: 'Whitney Houston', correct: false },
+          { text: 'Beyoncé', correct: false },
+          { text: "Nenhuma das alternativas", correct: false }
+        ]
+      },
+      {
+        question: 'Which musical genre originated in the African-American communities of New Orleans and became one of the most influential styles in the U.S. music scene?',
+        answers: [
+          { text: "Country", correct: false },
+          { text: "Jazz", correct: true }
+        ]
+      },
+      {
+        question: 'Who is the legendary guitarist who was a member of the rock band Led Zeppelin?',
+        answers: [
+          { text: 'Eric Clapton', correct: false },
+          { text: 'Jimmy Page', correct: true },
+          { text: 'Jimi Hendrix', correct: false },
+          { text: 'Keith Richards', correct: false }
+        ]
+      },
+      {
+        question: 'What is the name of the famous soul and R&B singer, known for hits like "Respect" and "Think"?',
+        answers: [
+          { text: 'Diana Ross', correct: false },
+          { text: 'Aretha Franklin', correct: true },
+          
+        ]
+      },
+      {
+        question: 'Which city is known as the birthplace of hip-hop, one of the most influential genres in contemporary music?',
+        answers: [
+          { text: 'Los Angeles', correct: false },
+          { text: 'Chicago', correct: false },
+          { text: 'Atlanta', correct: false },
+          { text: 'New York', correct: true },
+        ]
+      },
+      ]
+    
+    
+    </script>
+</body>
+</html>
